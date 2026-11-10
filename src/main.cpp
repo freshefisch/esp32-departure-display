@@ -45,9 +45,11 @@ void loop() {
     // Try reconnecting if needed
     bool wifiReady = updateWifi();
 
-    updateDepartures();
+    bool updatedDepartures = updateDepartures();
 
-    drawDepartures(getDepartures());
+    if (updatedDepartures) {
+        drawDepartures(getDepartures());
+    }
     
     // If not connected, don't fetch departures
     if (!wifiReady || !isClockSynced()) {return;}

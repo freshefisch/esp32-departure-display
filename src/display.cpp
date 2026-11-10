@@ -17,9 +17,6 @@ namespace {
     constexpr uint8_t LINE_SPACING = 2;
     constexpr uint8_t TOP_SPACING = 1;
 
-    unsigned long lastDraw = 0;
-    constexpr unsigned long DRAW_INTERVAL = 5000;
-
     constexpr uint8_t TRAM_ICON[] = {
         0b00011110,
         0b00111111,
@@ -81,17 +78,13 @@ void clearDisplay() {
 
 
 void drawDepartures(const std::vector<Departure>& departures) {
-    static bool firstDraw = true;
-
-    if (departures.empty() || (!firstDraw && millis() - lastDraw < DRAW_INTERVAL)) return;
-
-    firstDraw = false;
-    lastDraw = millis();
-
+    // DEBUG ONLY
     Serial.println("--- Printing departures...");
     for (const Departure& departure : departures) {
         printDeparture(departure);
     }
+
+    // TODO: Implement actual drawing
 }
 
 

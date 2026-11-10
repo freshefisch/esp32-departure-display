@@ -49,7 +49,7 @@ bool fetchDepartures(std::vector<Departure>& deps) {
     int status = http.GET();
 
     if (status != HTTP_CODE_OK) {
-        Serial.println("Request failed with code " + http.errorToString(status));
+        Serial.println("Request failed: " + http.errorToString(status));
         http.end();
         return false;
     }

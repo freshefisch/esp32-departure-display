@@ -4,5 +4,5 @@
 #include "departure.h"
 
 void fetchDeparturesIfNeeded();
-void updateDepartures();
+bool updateDepartures();
 const std::vector<Departure>& getDepartures();

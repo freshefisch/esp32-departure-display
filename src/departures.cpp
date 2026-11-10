@@ -32,21 +32,20 @@ void fetchDeparturesIfNeeded() {
     lastFetch = millis();
 }
 
-void updateDepartures() {
+
+bool updateDepartures() {
     static bool firstUpdate = true;
 
-    if (departures.empty() || (!firstUpdate && millis() - lastUpdate < UPDATE_INTERVAL)) return;
+    if (departures.empty() || (!firstUpdate && millis() - lastUpdate < UPDATE_INTERVAL)) return false;
 
     firstUpdate = false;
     lastUpdate = millis();
 
     Serial.println("\n- Updating cached departures...");
 
-    if (departures.empty()) return;
+    if (departures.empty()) return false;
 
-    // remove past
-
-    // update order
+    return true;
 }
 
 const std::vector<Departure>& getDepartures() {
