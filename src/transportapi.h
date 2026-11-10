@@ -7,4 +7,3 @@
 
 bool fetchDepartures(std::vector<Departure>& result);
 Departure makeDepartureStruct(JsonObject departureData);
-void printDeparture(const Departure& departure);

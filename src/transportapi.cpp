@@ -94,8 +94,3 @@ Departure makeDepartureStruct(JsonObject departureData) {
 
     return departure;
 }
-
-
-void printDeparture(const Departure& departure) {
-    Serial.printf("%s %s %ld\n", departure.line.c_str(), departure.destination.c_str(), departure.secondsRemaining());
-}

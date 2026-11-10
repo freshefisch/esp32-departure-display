@@ -45,14 +45,12 @@ void loop() {
     // Try reconnecting if needed
     updateWifi();
 
-    // UPDATE DISPLAY HERE
-    // TODO
+    updateDepartures();
+
+    drawDepartures(getDepartures());
     
     // If not connected, don't fetch departures
     if (!isWifiConnected()) {return;}
 
-    // FETCH DEPARTURES HERE
     fetchDeparturesIfNeeded();
-
-    updateDepartures();
 }

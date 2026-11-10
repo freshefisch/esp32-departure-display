@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <U8g2lib.h>
+#include <vector>
 
+#include "departure.h"
 #include "display.h"
 #include "config.h"
 
@@ -25,6 +27,9 @@ namespace {
         0b00111111,
         0b00010010
     };
+
+    unsigned long lastDraw = 0;
+    constexpr unsigned long DRAW_INTERVAL = 5000;
 }
 
 
@@ -72,4 +77,23 @@ void clearBuffer() {
 void clearDisplay() {
     display.clearBuffer();
     display.sendBuffer();
+}
+
+
+void drawDepartures(const std::vector<Departure>& departures) {
+    static bool firstDraw = true;
+
+    if (departures.empty() || (!firstDraw && millis() - lastDraw < DRAW_INTERVAL)) return;
+
+    firstDraw = false;
+    lastDraw = millis();
+
+    for (const Departure& departure : departures) { 
+        printDeparture(departure);
+    }
+}
+
+
+void printDeparture(const Departure& departure) {
+    Serial.printf("%s %s %ld\n", departure.line.c_str(), departure.destination.c_str(), departure.secondsRemaining());
 }

@@ -35,7 +35,7 @@ void fetchDeparturesIfNeeded() {
 void updateDepartures() {
     static bool firstUpdate = true;
 
-    if (!firstUpdate && millis() - lastUpdate < UPDATE_INTERVAL) return;
+    if (departures.empty() || (!firstUpdate && millis() - lastUpdate < UPDATE_INTERVAL)) return;
 
     firstUpdate = false;
     lastUpdate = millis();
@@ -47,9 +47,8 @@ void updateDepartures() {
     // remove past
 
     // update order
+}
 
-
-    for (const Departure& departure : departures) {
-        printDeparture(departure);
-    }
+const std::vector<Departure>& getDepartures() {
+    return departures;
 }

@@ -2,7 +2,7 @@
 #include <ArduinoJson.h>
 
 #include "departure.h"
-#include "departures.h"
 
 void fetchDeparturesIfNeeded();
 void updateDepartures();
+const std::vector<Departure>& getDepartures();
