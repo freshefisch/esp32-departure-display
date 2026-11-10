@@ -43,14 +43,14 @@ void setup() {
 
 void loop() {
     // Try reconnecting if needed
-    updateWifi();
+    bool wifiReady = updateWifi();
 
     updateDepartures();
 
     drawDepartures(getDepartures());
     
     // If not connected, don't fetch departures
-    if (!isWifiConnected()) {return;}
+    if (!wifiReady || !isClockSynced()) {return;}
 
     fetchDeparturesIfNeeded();
 }

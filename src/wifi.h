@@ -1,7 +1,7 @@
 #pragma once
 
 void connectToWifi();
-void updateWifi();
+bool updateWifi();
 bool isWifiConnected();
 
 String getIp();

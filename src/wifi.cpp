@@ -31,7 +31,7 @@ void connectToWifi() {
     Serial.println("Connecting to WiFi...");
 }
 
-void updateWifi() {
+bool updateWifi() {
     if (isWifiConnected()) {
         // If we are connected and still "connecting"
         if (connecting) {
@@ -41,7 +41,7 @@ void updateWifi() {
             connecting = false;
         }
         // If connected and done "connecting", do nothing
-        return;
+        return true;
     }
 
     // If we are NOT connected and still "connecting"
@@ -53,13 +53,15 @@ void updateWifi() {
             WiFi.disconnect();
             connecting = false;
         }
-        return;
+        return false;
     }
 
     // If we are not connecting and haven't been trying for at least RETRY_INTERVAL
     if (millis() - lastAttempt >= RETRY_INTERVAL) {
         connectToWifi();
     }
+
+    return false;
 }
 
 

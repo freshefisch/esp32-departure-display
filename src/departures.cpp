@@ -40,7 +40,7 @@ void updateDepartures() {
     firstUpdate = false;
     lastUpdate = millis();
 
-    Serial.println("\nUpdating cached departures...");
+    Serial.println("\n- Updating cached departures...");
 
     if (departures.empty()) return;
 
