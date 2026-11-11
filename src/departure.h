@@ -15,4 +15,12 @@ struct Departure {
     long secondsRemaining() const {
         return static_cast<long>(expectedDepartureTime() - getCurrentTime());
     }
+
+    int minutesRemaining() const {
+        return secondsRemaining() / 60;
+    }
+
+    String minutesRemainingStr() const {
+        return String(minutesRemaining());
+    }
 };
