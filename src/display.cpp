@@ -104,8 +104,6 @@ void drawDepartures(const std::vector<Departure>& departures) {
 
     uint8_t currentRow = 0;
     for (const Departure& departure : departures) {
-        printDeparture(departure);
-
         uint8_t y = TOP_SPACING + currentRow * (LINE_HEIGHT + LINE_SPACING);
         
         // Line
@@ -119,7 +117,7 @@ void drawDepartures(const std::vector<Departure>& departures) {
         // ETD
         if (departure.minutesRemaining() == 0) {
             display.drawXBM(
-                DISPLAY_WIDTH - 8 -1,
+                DISPLAY_WIDTH - 8,
                 y,
                 8,
                 12,
@@ -134,6 +132,11 @@ void drawDepartures(const std::vector<Departure>& departures) {
 
         currentRow += 1;
         if (currentRow >= LINE_NUM) break;
+    }
+
+    // Print all departures for debugging
+    for (const Departure& departure : departures) {
+        printDeparture(departure);
     }
 
     display.sendBuffer();

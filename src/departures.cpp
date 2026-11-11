@@ -10,7 +10,7 @@ namespace {
     std::vector<Departure> departures;
 
     unsigned long lastFetch = 0;
-    constexpr unsigned long FETCH_INTERVAL = 40000;
+    constexpr unsigned long FETCH_INTERVAL = 120000;
 
     unsigned long lastUpdate = 0;
     constexpr unsigned long UPDATE_INTERVAL = 10000;
@@ -45,12 +45,26 @@ bool updateDepartures() {
 
     if (departures.empty()) return false;
 
-    // TODO: Remove past
-
-    // TODO: Recalculate and set new ETD ???
+    departures.erase(std::remove_if(
+        departures.begin(),
+        departures.end(),
+        [](const Departure& d) {
+            return d.isExpired();
+        }
+    ), departures.end());
     
-    // TODO: Update order by departure time (secondary name!)
-
+    std::sort(
+        departures.begin(),
+        departures.end(),
+        [](const Departure& a, const Departure& b) {
+            if (a.secondsRemaining() != b.secondsRemaining()) {
+                return a.secondsRemaining() < b.secondsRemaining();
+            }
+            // if departure times match, sort by destination
+            // ensure consistent sorting
+            return a.destination < b.destination;
+        }
+    );
 
     return true;
 }

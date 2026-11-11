@@ -17,10 +17,17 @@ struct Departure {
     }
 
     int minutesRemaining() const {
-        return secondsRemaining() / 60;
+        // Departure time is essentially rounded to nearest whole number
+        long seconds = secondsRemaining() + 30;
+        return seconds >= 0 ? seconds / 60 : (seconds - 59) / 60;
     }
 
     String minutesRemainingStr() const {
         return String(minutesRemaining());
+    }
+
+    bool isExpired() const {
+        // Departure icon shown for 30 + 10 = 40 seconds
+        return secondsRemaining() < -10;
     }
 };
