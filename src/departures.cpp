@@ -20,6 +20,8 @@ namespace {
 void fetchDeparturesIfNeeded() {
     static bool firstFetch = true;
     
+    // TODO: Fetch departures instantly if less than ~6 are cached
+
     if (!firstFetch && millis() - lastFetch < FETCH_INTERVAL) return;
 
     std::vector<Departure> fetched;

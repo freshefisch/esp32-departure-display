@@ -106,11 +106,14 @@ void drawDepartures(const std::vector<Departure>& departures) {
     for (const Departure& departure : departures) {
         uint8_t y = TOP_SPACING + currentRow * (LINE_HEIGHT + LINE_SPACING);
         
+        // TODO: Adjust column widths if there is a value larger than default
+
         // Line
         uint16_t lineX = COLUMN_WIDTH_LINE - display.getUTF8Width(departure.line.c_str());
         display.drawUTF8(lineX, y, departure.line.c_str());
 
         // Destination
+        // TODO: Trunctuate or scroll line if its too wide
         uint16_t destX = COLUMN_WIDTH_LINE + COLUMN_GAP;
         display.drawUTF8(destX, y, departure.destination.c_str());
 
