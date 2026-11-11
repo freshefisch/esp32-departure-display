@@ -45,6 +45,13 @@ bool updateDepartures() {
 
     if (departures.empty()) return false;
 
+    // TODO: Remove past
+
+    // TODO: Recalculate and set new ETD ???
+    
+    // TODO: Update order by departure time (secondary name!)
+
+
     return true;
 }
 
