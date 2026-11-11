@@ -68,14 +68,17 @@ void initDisplay() {
     display.setFont(vbz_font);
     display.setFontPosTop();
 
-    drawText(12, 3, "Departure Display Starting...");
+    drawText(12, 2, "Departure Display Starting...", true);
     display.sendBuffer();
 
     Serial.println("Display set up");
 }
 
 
-void drawText(uint8_t pos, uint8_t row, String text) {
+void drawText(uint8_t pos, uint8_t row, String text, bool center) {
+    if (center) {
+        pos = (DISPLAY_WIDTH - display.getUTF8Width(text.c_str()) ) / 2;
+    }
     uint8_t y = TOP_SPACING + row * (LINE_HEIGHT + LINE_SPACING);
     display.drawUTF8(pos, y, text.c_str());
 }
