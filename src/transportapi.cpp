@@ -6,13 +6,14 @@
 #include "transportapi.h"
 #include "certificates.h"
 #include "departure.h"
+#include "textutils.h"
 
 
 namespace {
 
     constexpr char API_URL[] = "https://transport.opendata.ch/v1/stationboard";
     constexpr char FETCH_NUM[] = "10";
-    constexpr char STATION_ID[] = "8503059";
+    constexpr char STATION_ID[] = "8503000";
     constexpr const char* FIELDS[] = {
         "stationboard/category",
         "stationboard/number",
@@ -49,8 +50,7 @@ bool fetchDepartures(std::vector<Departure>& deps) {
     int status = http.GET();
 
     if (status != HTTP_CODE_OK) {
-        Serial.println("Request failed: " + http.errorToString(status));
-        http.end();
+        Serial.printf("Request failed (%d): %s\n", status, http.errorToString(status).c_str());
         return false;
     }
     
@@ -88,7 +88,7 @@ Departure makeDepartureStruct(JsonObject departureData) {
     line += departureData["number"].as<String>();
     
     departure.line = line;
-    departure.destination = departureData["to"].as<String>();
+    departure.destination = sanitizeText(departureData["to"].as<String>());
     departure.departureTime = departureData["stop"]["departureTimestamp"];
     departure.delay = departureData["stop"]["delay"];
 
