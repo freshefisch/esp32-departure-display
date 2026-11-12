@@ -31,3 +31,10 @@ struct Departure {
         return secondsRemaining() < -10;
     }
 };
+
+struct FormattedDeparture {
+    String line;
+    String destination;
+    String etd;
+    bool isDeparting;
+};

@@ -104,23 +104,53 @@ void drawDepartures(const std::vector<Departure>& departures) {
 
     // display.clearBuffer();
 
-    uint8_t currentRow = 0;
+
+    uint8_t i = 0;
+    std::vector<FormattedDeparture> formattedDepartures;
+
     for (const Departure& departure : departures) {
-        uint8_t y = TOP_SPACING + currentRow * (LINE_HEIGHT + LINE_SPACING);
-        
-        // TODO: Adjust column widths if there is a value larger than default
+        FormattedDeparture formattedDeparture;
 
-        // Line
-        uint16_t lineX = COLUMN_WIDTH_LINE - display.getUTF8Width(departure.line.c_str());
-        display.drawUTF8(lineX, y, departure.line.c_str());
+        formattedDeparture.line = departure.line;
 
-        // Destination
         // TODO: Trunctuate or scroll line if its too wide
-        uint16_t destX = COLUMN_WIDTH_LINE + COLUMN_GAP;
-        display.drawUTF8(destX, y, departure.destination.c_str());
+        formattedDeparture.destination = departure.destination;
 
-        // ETD
-        if (departure.minutesRemaining() == 0) {
+        String etd = "";
+        int minutesRemaining = departure.minutesRemaining();
+
+        if (minutesRemaining <= 0) {
+            formattedDeparture.isDeparting = true;
+            etd += "0";
+        } else {
+            formattedDeparture.isDeparting = false;
+
+            if (minutesRemaining > 99) {
+                etd += ">99";
+            } else {
+                etd += departure.minutesRemainingStr();
+            }
+        }
+        etd += "'";
+        formattedDeparture.etd = etd.c_str();
+
+        formattedDepartures.push_back(formattedDeparture);
+
+        i++;
+        if (i >= LINE_NUM) break;
+    }
+
+    uint8_t currentRow = 0;
+    for (const FormattedDeparture& dep : formattedDepartures) {
+        uint8_t y = TOP_SPACING + currentRow * (LINE_HEIGHT + LINE_SPACING);
+
+        uint16_t lineX = COLUMN_WIDTH_LINE - display.getUTF8Width(dep.line.c_str());
+        display.drawUTF8(lineX, y, dep.line.c_str());
+
+        uint16_t destX = COLUMN_WIDTH_LINE + COLUMN_GAP;
+        display.drawUTF8(destX, y, dep.destination.c_str());
+
+        if (dep.isDeparting) {
             display.drawXBM(
                 DISPLAY_WIDTH - 8,
                 y,
@@ -130,9 +160,8 @@ void drawDepartures(const std::vector<Departure>& departures) {
             );
         }
         else {
-            String etd = departure.minutesRemainingStr() + "'";
-            uint16_t etdX = DISPLAY_WIDTH - display.getUTF8Width(etd.c_str());
-            display.drawUTF8(etdX, y, etd.c_str());
+            uint16_t etdX = DISPLAY_WIDTH - display.getUTF8Width(dep.etd.c_str());
+            display.drawUTF8(etdX, y, dep.etd.c_str());
         }
 
         currentRow += 1;
@@ -143,8 +172,6 @@ void drawDepartures(const std::vector<Departure>& departures) {
     for (const Departure& departure : departures) {
         printDeparture(departure);
     }
-
-    // display.sendBuffer();
 }
 
 
