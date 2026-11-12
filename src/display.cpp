@@ -62,6 +62,7 @@ void initDisplay() {
 
     SPI.begin(OLED_SCLK, -1, OLED_MOSI, OLED_CS);
     display.begin();
+    display.setContrast(100);
     display.setFlipMode(1);
     display.clearBuffer();
 
