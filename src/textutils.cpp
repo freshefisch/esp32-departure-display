@@ -44,3 +44,13 @@ String sanitizeText(String text) {
 
     return text;
 }
+
+
+String removeLeadingZeros(String text) {
+    int i=0;
+    while (i < text.length() && text[i] == '0') {
+        i++;
+    }
+
+    return text.substring(i);
+}

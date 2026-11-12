@@ -85,7 +85,7 @@ Departure makeDepartureStruct(JsonObject departureData) {
     if (category != "T" && category != "B") {
         line += category;
     }
-    line += departureData["number"].as<String>();
+    line += removeLeadingZeros(departureData["number"].as<String>());
     
     departure.line = line;
     departure.destination = sanitizeText(departureData["to"].as<String>());
