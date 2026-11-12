@@ -6,3 +6,4 @@ bool isWifiConnected();
 
 String getIp();
 void printWifiNetworks();
+String getWifiSSID();

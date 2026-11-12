@@ -6,6 +6,7 @@
 #include "departure.h"
 #include "display.h"
 #include "config.h"
+#include "wifi.h"
 
 
 namespace {
@@ -62,7 +63,7 @@ void initDisplay() {
 
     SPI.begin(OLED_SCLK, -1, OLED_MOSI, OLED_CS);
     display.begin();
-    display.setContrast(100);
+    display.setContrast(90);
     display.setFlipMode(1);
     display.clearBuffer();
 
@@ -162,7 +163,8 @@ void drawDisplay(DisplayState state, const std::vector<Departure>& departures) {
             break;
         
         case DisplayState::NoWifi:
-            drawText(0, 2, "Connecting to WiFi...", true);
+            drawText(0, 1, "Connecting to WiFi...", true);
+            drawText(0, 3, "SSID: " + getWifiSSID(), true);
             break;
         
         case DisplayState::Connecting:

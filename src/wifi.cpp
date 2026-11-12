@@ -93,3 +93,7 @@ void printWifiNetworks() {
 
     WiFi.scanDelete();
 }
+
+String getWifiSSID() {
+    return WIFI_SSID;
+}
