@@ -11,6 +11,8 @@ namespace {
 
     unsigned long lastFetch = 0;
     constexpr unsigned long FETCH_INTERVAL = 120000;
+    constexpr unsigned long MIN_FETCH_INTERVAL = 30000;
+    constexpr size_t MIN_DEPARTURES = 5;
 
     unsigned long lastUpdate = 0;
     constexpr unsigned long UPDATE_INTERVAL = 10000;
@@ -20,9 +22,13 @@ namespace {
 FetchResult fetchDeparturesIfNeeded() {
     static bool firstFetch = true;
     
-    // TODO: Fetch departures instantly if less than ~6 are cached
+    // If less than MIN_DEPARTURES are chached, then fetch after MIN_FETCH_INTERVAL. Otherwise FETCH_INTERVAL
+    unsigned long interval = departures.size() <= MIN_DEPARTURES
+        ? MIN_FETCH_INTERVAL : FETCH_INTERVAL;
 
-    if (!firstFetch && millis() - lastFetch < FETCH_INTERVAL) return FetchResult::Skipped;
+    if (!firstFetch && millis() - lastFetch < interval) {
+        return FetchResult::Skipped;
+    }
 
     std::vector<Departure> fetched;
 
@@ -35,11 +41,9 @@ FetchResult fetchDeparturesIfNeeded() {
     firstFetch = false;
     lastFetch = millis();
 
-    if (fetchSucessful) {
-        return FetchResult::Success;
-    }
-
-    return FetchResult::Failed;
+    return fetchSucessful
+        ? FetchResult::Success
+        : FetchResult::Failed;
 }
 
 
