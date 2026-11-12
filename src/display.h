@@ -20,3 +20,4 @@ void clearDisplay();
 void drawDepartures(const std::vector<Departure>& departures);
 void printDeparture(const Departure& departure);
 void drawDisplay(DisplayState state, const std::vector<Departure>& departures);
+uint16_t textWidth (const String& text);

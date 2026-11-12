@@ -30,10 +30,9 @@ namespace {
     constexpr uint16_t DISPLAY_WIDTH = 256;
     constexpr uint16_t DISPLAY_HEIGHT = 64;
 
-    constexpr uint8_t COLUMN_WIDTH_LINE = 32;
-    constexpr uint8_t COLUMN_WIDTH_ETD = 32;
+    constexpr uint8_t COLUMN_MINWIDTH_LINE = 32;
+    constexpr uint8_t COLUMN_MINWIDTH_ETD = 8;
     constexpr uint8_t COLUMN_GAP = 8;
-    constexpr uint8_t COLUMN_WIDTH_DESTINATION = DISPLAY_WIDTH - COLUMN_WIDTH_ETD - COLUMN_WIDTH_LINE - 2*COLUMN_GAP;
 
     static const uint8_t DEPARTING_ICON_8x12[] = {
         0b01111110,
@@ -76,7 +75,7 @@ void initDisplay() {
 
 void drawText(uint8_t pos, uint8_t row, String text, bool center) {
     if (center) {
-        pos = (DISPLAY_WIDTH - display.getUTF8Width(text.c_str()) ) / 2;
+        pos = (DISPLAY_WIDTH - textWidth(text) ) / 2;
     }
     uint8_t y = TOP_SPACING + row * (LINE_HEIGHT + LINE_SPACING);
     display.drawUTF8(pos, y, text.c_str());
@@ -102,28 +101,33 @@ void clearDisplay() {
 void drawDepartures(const std::vector<Departure>& departures) {
     Serial.println("--- Drawing departures...");
 
-    // display.clearBuffer();
-
+    uint16_t columnWidthLine = COLUMN_MINWIDTH_LINE;
+    uint16_t columnWidthEtd = COLUMN_MINWIDTH_ETD;
 
     uint8_t i = 0;
     std::vector<FormattedDeparture> formattedDepartures;
+    formattedDepartures.reserve(min(departures.size(), static_cast<size_t>(LINE_NUM)));
+
+
+    // CREATE FormattedDeparture STRUCTS WITH FORMATTED DATA
 
     for (const Departure& departure : departures) {
-        FormattedDeparture formattedDeparture;
+        FormattedDeparture formDeparture;
 
-        formattedDeparture.line = departure.line;
+        formDeparture.line = departure.line;
 
-        // TODO: Trunctuate or scroll line if its too wide
-        formattedDeparture.destination = departure.destination;
+        columnWidthLine = max(columnWidthLine, textWidth(formDeparture.line));
+
+        formDeparture.destination = departure.destination;
 
         String etd = "";
         int minutesRemaining = departure.minutesRemaining();
 
         if (minutesRemaining <= 0) {
-            formattedDeparture.isDeparting = true;
+            formDeparture.isDeparting = true;
             etd += "0";
         } else {
-            formattedDeparture.isDeparting = false;
+            formDeparture.isDeparting = false;
 
             if (minutesRemaining > 99) {
                 etd += ">99";
@@ -132,23 +136,34 @@ void drawDepartures(const std::vector<Departure>& departures) {
             }
         }
         etd += "'";
-        formattedDeparture.etd = etd.c_str();
+        formDeparture.etd = etd;
 
-        formattedDepartures.push_back(formattedDeparture);
+        columnWidthEtd = max(columnWidthEtd, textWidth(etd));
+
+        formattedDepartures.push_back(formDeparture);
 
         i++;
         if (i >= LINE_NUM) break;
     }
 
+
+    // DRAW DEPARTURES
+
     uint8_t currentRow = 0;
     for (const FormattedDeparture& dep : formattedDepartures) {
         uint8_t y = TOP_SPACING + currentRow * (LINE_HEIGHT + LINE_SPACING);
 
-        uint16_t lineX = COLUMN_WIDTH_LINE - display.getUTF8Width(dep.line.c_str());
+        int16_t lineX = columnWidthLine - textWidth(dep.line);
         display.drawUTF8(lineX, y, dep.line.c_str());
 
-        uint16_t destX = COLUMN_WIDTH_LINE + COLUMN_GAP;
-        display.drawUTF8(destX, y, dep.destination.c_str());
+        int16_t destX = columnWidthLine + COLUMN_GAP;
+        int16_t destRightX = DISPLAY_WIDTH - columnWidthEtd - COLUMN_GAP;
+
+        if (destRightX > destX) {
+            display.setClipWindow(destX, 0, destRightX, DISPLAY_HEIGHT);
+            display.drawUTF8(destX, y, dep.destination.c_str());
+            display.setMaxClipWindow();
+        }
 
         if (dep.isDeparting) {
             display.drawXBM(
@@ -160,7 +175,7 @@ void drawDepartures(const std::vector<Departure>& departures) {
             );
         }
         else {
-            uint16_t etdX = DISPLAY_WIDTH - display.getUTF8Width(dep.etd.c_str());
+            int16_t etdX = DISPLAY_WIDTH - textWidth(dep.etd);
             display.drawUTF8(etdX, y, dep.etd.c_str());
         }
 
@@ -208,4 +223,8 @@ void drawDisplay(DisplayState state, const std::vector<Departure>& departures) {
     }
 
     display.sendBuffer();
+}
+
+uint16_t textWidth (const String& text) {
+    return static_cast<uint16_t>(display.getUTF8Width(text.c_str()));
 }
