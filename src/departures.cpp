@@ -17,21 +17,29 @@ namespace {
 }
 
 
-void fetchDeparturesIfNeeded() {
+FetchResult fetchDeparturesIfNeeded() {
     static bool firstFetch = true;
     
     // TODO: Fetch departures instantly if less than ~6 are cached
 
-    if (!firstFetch && millis() - lastFetch < FETCH_INTERVAL) return;
+    if (!firstFetch && millis() - lastFetch < FETCH_INTERVAL) return FetchResult::Skipped;
 
     std::vector<Departure> fetched;
 
-    if (fetchDepartures(fetched)) {
+    bool fetchSucessful = fetchDepartures(fetched);
+
+    if (fetchSucessful) {
         departures = std::move(fetched);
     }
 
     firstFetch = false;
     lastFetch = millis();
+
+    if (fetchSucessful) {
+        return FetchResult::Success;
+    }
+
+    return FetchResult::Failed;
 }
 
 

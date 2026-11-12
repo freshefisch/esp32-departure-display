@@ -13,7 +13,7 @@ namespace {
 
     constexpr char API_URL[] = "https://transport.opendata.ch/v1/stationboard";
     constexpr char FETCH_NUM[] = "10";
-    constexpr char STATION_ID[] = "8503000";
+    constexpr char STATION_ID[] = "8591279"; // Zürich HB: 8503000, Zürich Morgental: 8591279
     constexpr const char* FIELDS[] = {
         "stationboard/category",
         "stationboard/number",

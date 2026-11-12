@@ -68,9 +68,6 @@ void initDisplay() {
     display.setFont(vbz_font);
     display.setFontPosTop();
 
-    drawText(12, 2, "Departure Display Starting...", true);
-    display.sendBuffer();
-
     Serial.println("Display set up");
 }
 
@@ -103,7 +100,7 @@ void clearDisplay() {
 void drawDepartures(const std::vector<Departure>& departures) {
     Serial.println("--- Drawing departures...");
 
-    display.clearBuffer();
+    // display.clearBuffer();
 
     uint8_t currentRow = 0;
     for (const Departure& departure : departures) {
@@ -145,10 +142,40 @@ void drawDepartures(const std::vector<Departure>& departures) {
         printDeparture(departure);
     }
 
-    display.sendBuffer();
+    // display.sendBuffer();
 }
 
 
 void printDeparture(const Departure& departure) {
     Serial.printf("%s %s %d (%ld s)\n", departure.line.c_str(), departure.destination.c_str(), departure.minutesRemaining(), departure.secondsRemaining());
+}
+
+
+void drawDisplay(DisplayState state, const std::vector<Departure>& departures) {
+    Serial.println("-- Drawing display...");
+    display.clearBuffer();
+
+    switch(state) {
+        case DisplayState::Departures:
+            drawDepartures(departures);
+            break;
+        
+        case DisplayState::NoWifi:
+            drawText(0, 2, "Connecting to WiFi...", true);
+            break;
+        
+        case DisplayState::Connecting:
+            drawText(0, 2, "Connecting...", true);
+            break;
+        
+        case DisplayState::Loading:
+            drawText(0, 2, "Loading departures...", true);
+            break;
+        
+        case DisplayState::ApiUnavailable:
+            drawText(0, 2, "Departures unavailable", true);
+            break;
+    }
+
+    display.sendBuffer();
 }
